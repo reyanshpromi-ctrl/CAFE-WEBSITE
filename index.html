@@ -1,14 +1,13 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CafeHub | Fresh Coffee & Snacks | Fast Delivery across India</title>
+    <title>CafeHub | Order Online | Fast Delivery India</title>
     
     <meta name="google-site-verification" content="WMGtHkBUokxzvJEGXOy02y34MEyM2I9RZNGSl4stDvo" />
     
-    <meta name="description" content="CafeHub - Indian snacks, artisan coffee, and fast delivery. Order via WhatsApp!">
+    <meta name="description" content="CafeHub - Fresh coffee ₹30+, Indian snacks, fast delivery. Order via WhatsApp!">
     
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -16,12 +15,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body>
+<body class="bg-orange-50/30">
     <div id="root"></div>
     
     <script type="text/babel">
@@ -46,6 +45,7 @@
             const [orderType, setOrderType] = useState('delivery');
             const [customerName, setCustomerName] = useState('');
 
+            // --- CART LOGIC ---
             const addToCart = (item) => {
                 const existing = cart.find(c => c.id === item.id);
                 if (existing) {
@@ -53,6 +53,19 @@
                 } else {
                     setCart([...cart, { ...item, quantity: 1 }]);
                 }
+            };
+
+            const reduceQuantity = (id) => {
+                const existing = cart.find(c => c.id === id);
+                if (existing.quantity > 1) {
+                    setCart(cart.map(c => c.id === id ? { ...c, quantity: c.quantity - 1 } : c));
+                } else {
+                    removeFromCart(id);
+                }
+            };
+
+            const removeFromCart = (id) => {
+                setCart(cart.filter(item => item.id !== id));
             };
 
             const getTotal = () => {
@@ -66,17 +79,17 @@
 
             const placeWhatsAppOrder = () => {
                 if (cart.length === 0) return alert('Add items to cart first! ☕');
-                const orderText = `*New Order from CafeHub*%0A%0A*Name:* ${customerName || 'Guest'}%0A*Type:* ${orderType.toUpperCase()}%0A%0A*Items:*%0A${cart.map(item => `• ${item.quantity} x ${item.name} (₹${item.price})`).join('%0A')}%0A%0A*Total Amount:* ₹${getTotal()}%0A%0APlease confirm my order! ☕`;
+                const orderText = `*New Order from CafeHub India*%0A%0A*Name:* ${customerName || 'Guest'}%0A*Type:* ${orderType.toUpperCase()}%0A%0A*Items:*%0A${cart.map(item => `• ${item.quantity} x ${item.name} (₹${item.price})`).join('%0A')}%0A%0A*Total Amount:* ₹${getTotal()}%0A%0APlease confirm my order! ☕`;
                 window.open(`https://wa.me/918805984678?text=${orderText}`, '_blank');
             };
 
             return (
-                <div className="min-h-screen bg-orange-50/30">
-                    <header className="bg-white/80 backdrop-blur-lg sticky top-0 z-50 border-b border-orange-100 shadow-sm">
-                        <nav className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+                <div className="min-h-screen">
+                    <header className="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-orange-100 shadow-sm px-4 py-3">
+                        <nav className="max-w-6xl mx-auto flex items-center justify-between">
                             <div className="flex items-center gap-2 cursor-pointer" onClick={() => setCurrentTab('home')}>
                                 <span className="text-3xl">☕</span>
-                                <h1 className="text-2xl font-extrabold text-orange-950 tracking-tight">CafeHub</h1>
+                                <h1 className="text-xl font-extrabold text-orange-950">CafeHub</h1>
                             </div>
                             <div className="flex bg-gray-100 p-1 rounded-xl">
                                 {['home', 'menu', 'cart'].map(tab => (
@@ -85,7 +98,7 @@
                                         onClick={() => setCurrentTab(tab)}
                                         className={`px-4 py-2 rounded-lg text-xs font-black transition-all ${currentTab === tab ? 'bg-orange-600 text-white shadow-md' : 'text-gray-500'}`}
                                     >
-                                        {tab.toUpperCase()}
+                                        {tab === 'cart' ? `CART (${cart.length})` : tab.toUpperCase()}
                                     </button>
                                 ))}
                             </div>
@@ -96,36 +109,23 @@
                         {currentTab === 'home' && (
                             <div className="py-12 text-center">
                                 <h2 className="text-6xl font-black text-gray-900 mb-6 leading-tight">
-                                    Taste India's <br/> <span className="text-orange-600 underline">Favorite Snacks</span>
+                                    Your Favorite <br/> <span className="text-orange-600 italic">Cafe at Home</span>
                                 </h2>
-                                <p className="text-xl text-gray-600 mb-10 max-w-xl mx-auto">Freshly brewed coffee and hot snacks delivered to your door starting at just ₹30.</p>
-                                <button onClick={() => setCurrentTab('menu')} className="bg-orange-600 text-white px-12 py-5 rounded-full font-black text-xl shadow-2xl hover:scale-105 transition-transform">
-                                    Browse Menu 🍕
+                                <p className="text-lg text-gray-600 mb-10 max-w-md mx-auto">Authentic Indian snacks & freshly brewed coffee delivered in 20 minutes.</p>
+                                <button onClick={() => setCurrentTab('menu')} className="bg-orange-600 text-white px-12 py-5 rounded-full font-black text-xl shadow-xl hover:scale-105 transition-transform">
+                                    Start Ordering 🍕
                                 </button>
-                                <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 opacity-75">
-                                    <div className="p-4 bg-white rounded-2xl border border-orange-100">
-                                        <p className="text-2xl mb-1">⚡</p>
-                                        <p className="font-bold text-xs">20 MIN DELIVERY</p>
-                                    </div>
-                                    <div className="p-4 bg-white rounded-2xl border border-orange-100">
-                                        <p className="text-2xl mb-1">💰</p>
-                                        <p className="font-bold text-xs">BEST PRICES</p>
-                                    </div>
-                                    <div className="p-4 bg-white rounded-2xl border border-orange-100">
-                                        <p className="text-2xl mb-1">🧼</p>
-                                        <p className="font-bold text-xs">HYGIENIC PREP</p>
-                                    </div>
-                                    <div className="p-4 bg-white rounded-2xl border border-orange-100">
-                                        <p className="text-2xl mb-1">📍</p>
-                                        <p className="font-bold text-xs">ALL OVER INDIA</p>
-                                    </div>
+                                <div className="mt-12 flex flex-wrap justify-center gap-6 opacity-60 text-xs font-bold uppercase tracking-widest">
+                                    <span>⚡ Fast Delivery</span>
+                                    <span>💎 Premium Quality</span>
+                                    <span>🇮🇳 Proudly Indian</span>
                                 </div>
                             </div>
                         )}
 
                         {currentTab === 'menu' && (
                             <div>
-                                <div className="flex gap-2 overflow-x-auto pb-6 no-scrollbar mb-8">
+                                <div className="flex gap-2 overflow-x-auto pb-6 no-scrollbar">
                                     {['all', 'Coffee', 'Tea', 'Food', 'Dessert'].map(cat => (
                                         <button 
                                             key={cat}
@@ -137,17 +137,17 @@
                                     ))}
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     {filteredMenu.map(item => (
-                                        <div key={item.id} className="bg-white rounded-[2.5rem] p-6 border border-orange-50 shadow-sm hover:shadow-xl transition-all group">
-                                            <div className="text-5xl mb-4 group-hover:scale-110 transition-transform inline-block">{item.image}</div>
-                                            <h3 className="font-extrabold text-2xl text-gray-900 mb-1">{item.name}</h3>
+                                        <div key={item.id} className="bg-white rounded-3xl p-6 border border-orange-50 shadow-sm hover:shadow-md transition-all">
+                                            <div className="text-5xl mb-4">{item.image}</div>
+                                            <h3 className="font-extrabold text-xl text-gray-900 mb-1">{item.name}</h3>
                                             <p className="text-gray-500 text-sm mb-6 leading-relaxed">{item.description}</p>
                                             <div className="flex items-center justify-between">
-                                                <span className="text-3xl font-black text-orange-600">₹{item.price}</span>
+                                                <span className="text-2xl font-black text-orange-600">₹{item.price}</span>
                                                 <button 
                                                     onClick={() => addToCart(item)}
-                                                    className="bg-orange-50 text-orange-600 px-6 py-3 rounded-2xl font-black hover:bg-orange-600 hover:text-white transition-all shadow-sm"
+                                                    className="bg-orange-600 text-white px-6 py-2 rounded-xl font-black hover:bg-orange-700 transition-all shadow-sm"
                                                 >
                                                     + Add
                                                 </button>
@@ -160,56 +160,74 @@
 
                         {currentTab === 'cart' && (
                             <div className="max-w-xl mx-auto">
-                                <div className="bg-white p-8 rounded-[3rem] shadow-2xl border border-orange-50">
-                                    <h2 className="text-3xl font-black mb-8 text-gray-900">Your Tray</h2>
+                                <div className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-orange-50">
+                                    <h2 className="text-2xl font-black mb-8 text-gray-900 flex items-center gap-2">
+                                        🛒 My Order
+                                    </h2>
                                     
-                                    <div className="flex gap-4 mb-8">
-                                        <button onClick={() => setOrderType('delivery')} className={`flex-1 p-4 rounded-2xl font-bold border-2 transition-all ${orderType === 'delivery' ? 'border-orange-500 bg-orange-50 text-orange-600' : 'border-gray-100 text-gray-400'}`}>🚚 Delivery</button>
-                                        <button onClick={() => setOrderType('pickup')} className={`flex-1 p-4 rounded-2xl font-bold border-2 transition-all ${orderType === 'pickup' ? 'border-orange-500 bg-orange-50 text-orange-600' : 'border-gray-100 text-gray-400'}`}>🏪 Pickup</button>
+                                    <div className="flex gap-2 mb-8 bg-gray-50 p-1 rounded-2xl">
+                                        <button onClick={() => setOrderType('delivery')} className={`flex-1 py-3 rounded-xl font-bold transition-all ${orderType === 'delivery' ? 'bg-white text-orange-600 shadow-sm' : 'text-gray-400'}`}>🚚 Delivery</button>
+                                        <button onClick={() => setOrderType('pickup')} className={`flex-1 py-3 rounded-xl font-bold transition-all ${orderType === 'pickup' ? 'bg-white text-orange-600 shadow-sm' : 'text-gray-400'}`}>🏪 Pickup</button>
                                     </div>
 
                                     {cart.length === 0 ? (
                                         <div className="text-center py-12">
                                             <p className="text-gray-400 font-bold mb-4">Your tray is empty!</p>
-                                            <button onClick={() => setCurrentTab('menu')} className="text-orange-600 font-black underline">Go back to menu</button>
+                                            <button onClick={() => setCurrentTab('menu')} className="text-orange-600 font-black underline">Browse Menu</button>
                                         </div>
                                     ) : (
                                         <>
-                                            <div className="space-y-6 mb-8">
+                                            <div className="space-y-6 mb-8 max-h-80 overflow-y-auto pr-2 no-scrollbar">
                                                 {cart.map(item => (
-                                                    <div key={item.id} className="flex justify-between items-center">
-                                                        <div className="flex items-center gap-4">
+                                                    <div key={item.id} className="flex justify-between items-center bg-orange-50/30 p-4 rounded-2xl border border-orange-50">
+                                                        <div className="flex items-center gap-3">
                                                             <span className="text-2xl">{item.image}</span>
                                                             <div>
-                                                                <p className="font-extrabold text-gray-900">{item.name}</p>
-                                                                <p className="text-xs font-bold text-gray-400">{item.quantity} unit(s) • ₹{item.price}</p>
+                                                                <p className="font-extrabold text-gray-900 text-sm">{item.name}</p>
+                                                                <p className="text-xs font-bold text-orange-600">₹{item.price}</p>
                                                             </div>
                                                         </div>
-                                                        <span className="font-black text-gray-900">₹{item.price * item.quantity}</span>
+                                                        
+                                                        {/* --- QUANTITY ADJUSTER --- */}
+                                                        <div className="flex items-center gap-3 bg-white px-3 py-1.5 rounded-xl border border-orange-100 shadow-sm">
+                                                            <button 
+                                                                onClick={() => reduceQuantity(item.id)}
+                                                                className="w-6 h-6 flex items-center justify-center font-black text-orange-600 hover:bg-orange-50 rounded-lg"
+                                                            >
+                                                                -
+                                                            </button>
+                                                            <span className="font-black text-sm w-4 text-center">{item.quantity}</span>
+                                                            <button 
+                                                                onClick={() => addToCart(item)}
+                                                                className="w-6 h-6 flex items-center justify-center font-black text-orange-600 hover:bg-orange-50 rounded-lg"
+                                                            >
+                                                                +
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 ))}
                                             </div>
 
-                                            <div className="mb-8 pt-6 border-t border-dashed border-gray-200">
+                                            <div className="mb-6">
                                                 <input 
                                                     type="text" 
-                                                    placeholder="Enter Your Name" 
-                                                    className="w-full p-4 rounded-2xl bg-orange-50/50 border-none outline-none focus:ring-2 focus:ring-orange-200 font-bold placeholder:text-orange-300"
+                                                    placeholder="Enter Your Full Name" 
+                                                    className="w-full p-4 rounded-2xl bg-gray-50 border-none outline-none focus:ring-2 focus:ring-orange-200 font-bold"
                                                     value={customerName}
                                                     onChange={(e) => setCustomerName(e.target.value)}
                                                 />
                                             </div>
 
-                                            <div className="flex justify-between items-center mb-8">
-                                                <span className="text-gray-500 font-bold uppercase tracking-widest text-xs">Grand Total</span>
-                                                <span className="text-4xl font-black text-orange-600">₹{getTotal()}</span>
+                                            <div className="flex justify-between items-center mb-8 px-2">
+                                                <span className="text-gray-500 font-bold text-xs uppercase tracking-widest">Total Bill</span>
+                                                <span className="text-3xl font-black text-orange-600">₹{getTotal()}</span>
                                             </div>
 
                                             <button 
                                                 onClick={placeWhatsAppOrder}
-                                                className="w-full bg-green-600 text-white py-5 rounded-[2rem] font-black text-xl shadow-xl hover:shadow-green-200 hover:scale-[1.02] transition-all flex items-center justify-center gap-3"
+                                                className="w-full bg-green-600 text-white py-5 rounded-2xl font-black text-lg shadow-lg hover:bg-green-700 transition-all flex items-center justify-center gap-3"
                                             >
-                                                <i className="fab fa-whatsapp text-2xl"></i> Order via WhatsApp
+                                                <i className="fab fa-whatsapp text-2xl"></i> CONFIRM VIA WHATSAPP
                                             </button>
                                         </>
                                     )}
@@ -218,25 +236,15 @@
                         )}
                     </main>
 
-                    <footer className="bg-orange-950 text-orange-100 py-16 mt-20">
-                        <div className="max-w-6xl mx-auto px-4 text-center">
-                            <h2 className="text-3xl font-black text-white mb-4">CafeHub India</h2>
-                            <p className="opacity-70 mb-8 max-w-sm mx-auto">Freshly made snacks and artisan coffee delivered faster than you can say 'Chai'.</p>
-                            
-                            <div className="space-y-4 mb-10">
-                                <p className="text-xs font-black tracking-widest uppercase opacity-40">Contact Support</p>
-                                <a href="tel:+918805984678" className="text-2xl font-black text-white block hover:text-orange-400 transition-colors">+91 88059 84678</a>
-                                <p className="text-sm">Available: 8:00 AM - 11:00 PM IST</p>
-                            </div>
-
-                            <div className="flex justify-center gap-6 mb-10">
-                                <a href="#" className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-xl hover:bg-orange-600 transition-all"><i className="fab fa-instagram"></i></a>
-                                <a href="https://wa.me/918805984678" className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-xl hover:bg-green-600 transition-all"><i className="fab fa-whatsapp"></i></a>
-                            </div>
-
-                            <div className="pt-8 border-t border-white/10 text-xs opacity-40 font-bold">
-                                © 2026 CAFEHUB INDIA. ALL RIGHTS RESERVED.
-                            </div>
+                    <footer className="bg-orange-950 text-orange-200 py-16 mt-20 text-center px-4">
+                        <h2 className="text-2xl font-black text-white mb-2">CafeHub India</h2>
+                        <p className="opacity-60 mb-8">Serving joy one cup at a time.</p>
+                        <div className="mb-8">
+                            <p className="text-[10px] font-black tracking-widest uppercase opacity-40 mb-2">Direct Hotline</p>
+                            <a href="tel:+918805984678" className="text-xl font-black text-white hover:text-orange-400 transition-colors">+91 88059 84678</a>
+                        </div>
+                        <div className="pt-8 border-t border-white/5 text-[10px] opacity-30 font-bold uppercase tracking-tighter">
+                            © 2026 CAFEHUB. DESIGNED FOR INDIA.
                         </div>
                     </footer>
                 </div>
@@ -248,4 +256,4 @@
     </script>
 </body>
 </html>
-```
+        
